@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Plus, ArrowLeft, Search, ArrowUpDown } from "lucide-react";
+import { Plus, ArrowLeft, Search, ArrowUpDown, Trash2 } from "lucide-react";
 import { Category, Subscription } from "@/lib/types";
 import { loadSubscriptions, loadDemoSubscriptions, saveSubscriptions } from "@/lib/storage";
 import { formatCurrency, getDaysUntilRenewal, getTotalMonthly, toMonthlyPrice } from "@/lib/calculations";
@@ -51,6 +51,7 @@ function DashboardContent() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Subscription | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [clearConfirm, setClearConfirm] = useState(false);
 
   useEffect(() => {
     saveSubscriptions(subscriptions);
@@ -84,9 +85,29 @@ function DashboardContent() {
     setModalOpen(true);
   }
 
+  function handleClearAll() {
+    if (clearConfirm) {
+      setSubscriptions([]);
+      setFilter("all");
+      setSearch("");
+      setClearConfirm(false);
+      return;
+    }
+
+    setClearConfirm(true);
+    setTimeout(() => setClearConfirm(false), 3000);
+  }
+
   const filtered = subscriptions
     .filter((s) => filter === "all" || s.category === filter)
-    .filter((s) => !search || s.name.toLowerCase().includes(search.toLowerCase()))
+    .filter((s) => {
+      const query = search.toLowerCase();
+      return (
+        !query ||
+        s.name.toLowerCase().includes(query) ||
+        s.notes?.toLowerCase().includes(query)
+      );
+    })
     .sort((a, b) => {
       switch (sort) {
         case "price_desc":
@@ -263,15 +284,27 @@ function DashboardContent() {
                   </p>
                 )}
               </div>
-              {filter !== "all" || search ? (
-                <button
-                  onClick={() => { setFilter("all"); setSearch(""); }}
-                  className="text-xs cursor-pointer transition-colors"
-                  style={{ color: "#7c3aed" }}
-                >
-                  Limpiar filtros
-                </button>
-              ) : null}
+              <div className="flex items-center gap-3">
+                {filter !== "all" || search ? (
+                  <button
+                    onClick={() => { setFilter("all"); setSearch(""); }}
+                    className="text-xs cursor-pointer transition-colors"
+                    style={{ color: "#7c3aed" }}
+                  >
+                    Limpiar filtros
+                  </button>
+                ) : null}
+                {subscriptions.length > 0 && (
+                  <button
+                    onClick={handleClearAll}
+                    className="flex items-center gap-1.5 text-xs cursor-pointer transition-colors"
+                    style={{ color: clearConfirm ? "#ef4444" : "#64748b" }}
+                  >
+                    <Trash2 size={13} />
+                    {clearConfirm ? "Confirmar vaciado" : "Vaciar lista"}
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Cards */}

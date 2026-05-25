@@ -22,6 +22,7 @@ const empty: Omit<Subscription, "id"> = {
   price: 0,
   frequency: "monthly",
   renewalDate: today,
+  notes: "",
 };
 
 function formFromSubscription(subscription?: Subscription | null): Omit<Subscription, "id"> {
@@ -32,6 +33,7 @@ function formFromSubscription(subscription?: Subscription | null): Omit<Subscrip
     price: subscription.price,
     frequency: subscription.frequency,
     renewalDate: subscription.renewalDate,
+    notes: subscription.notes ?? "",
   };
 }
 
@@ -60,6 +62,7 @@ export default function SubscriptionModal({
     if (!validate()) return;
     onSave({
       ...form,
+      notes: form.notes?.trim(),
       id: subscription?.id ?? generateId(),
     });
     onClose();
@@ -78,7 +81,7 @@ export default function SubscriptionModal({
       onClick={handleBackdropClick}
     >
       <div
-        className="w-full max-w-md rounded-2xl border animate-fade-in-up"
+        className="w-full max-w-md rounded-2xl border animate-fade-in-up max-h-[calc(100vh-2rem)] overflow-y-auto"
         style={{
           background: "linear-gradient(135deg, #18181f 0%, #111118 100%)",
           borderColor: "rgba(255,255,255,0.1)",
@@ -213,6 +216,26 @@ export default function SubscriptionModal({
             {errors.renewalDate && (
               <p className="mt-1 text-xs" style={{ color: "#ef4444" }}>{errors.renewalDate}</p>
             )}
+          </div>
+
+          {/* Notes */}
+          <div>
+            <label className="block text-sm font-medium mb-2" style={{ color: "#94a3b8" }}>
+              Notas
+            </label>
+            <textarea
+              value={form.notes ?? ""}
+              onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+              placeholder="Ej. compartida con familia, cancelar antes de junio..."
+              rows={3}
+              className="w-full rounded-xl px-4 py-3 text-white text-sm outline-none transition-all resize-none"
+              style={{
+                background: "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(255,255,255,0.1)",
+              }}
+              onFocus={(e) => (e.target.style.borderColor = "#7c3aed")}
+              onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")}
+            />
           </div>
 
           {/* Actions */}

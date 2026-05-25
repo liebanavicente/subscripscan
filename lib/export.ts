@@ -20,6 +20,7 @@ export function exportToCSV(subscriptions: Subscription[]): void {
     "Precio mensual",
     "Precio anual",
     "Próxima renovación",
+    "Notas",
   ];
 
   const rows = subscriptions.map((s) => [
@@ -30,13 +31,14 @@ export function exportToCSV(subscriptions: Subscription[]): void {
     `${toMonthlyPrice(s).toFixed(2)} €`,
     `${toAnnualPrice(s).toFixed(2)} €`,
     s.renewalDate,
+    s.notes ?? "",
   ]);
 
   const totalMonthly = getTotalMonthly(subscriptions);
   const totalAnnual = getTotalAnnual(subscriptions);
 
   rows.push([]);
-  rows.push(["TOTAL", "", "", "", `${totalMonthly.toFixed(2)} €`, `${totalAnnual.toFixed(2)} €`, ""]);
+  rows.push(["TOTAL", "", "", "", `${totalMonthly.toFixed(2)} €`, `${totalAnnual.toFixed(2)} €`, "", ""]);
 
   const csv = [headers, ...rows]
     .map((row) =>
@@ -119,7 +121,7 @@ export async function exportToPDF(subscriptions: Subscription[]): Promise<void> 
 
   // Table
   const tableRows = subscriptions.map((s) => [
-    s.name,
+    s.notes ? `${s.name}\n${s.notes}` : s.name,
     CATEGORY_META[s.category].label,
     `${s.price.toFixed(2)} €`,
     FREQUENCY_LABELS[s.frequency],
