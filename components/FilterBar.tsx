@@ -13,7 +13,7 @@ export default function FilterBar({ selected, onChange }: Props) {
     <div className="flex gap-2 flex-wrap">
       <button
         onClick={() => onChange("all")}
-        className="px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer"
+        className="h-9 px-3 rounded-xl text-xs font-medium transition-all cursor-pointer flex-shrink-0"
         style={{
           background: selected === "all" ? "#7c3aed" : "rgba(255,255,255,0.05)",
           color: selected === "all" ? "white" : "#64748b",
@@ -29,19 +29,18 @@ export default function FilterBar({ selected, onChange }: Props) {
           <button
             key={cat}
             onClick={() => onChange(cat)}
-            className="px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5"
+            title={meta.label}
+            className="w-9 h-9 rounded-xl text-base transition-all cursor-pointer flex items-center justify-center flex-shrink-0"
             style={{
-              background: isActive ? `${meta.color}20` : "rgba(255,255,255,0.05)",
-              color: isActive ? meta.color : "#64748b",
+              background: isActive ? `${meta.color}22` : "rgba(255,255,255,0.05)",
               border: isActive
                 ? `1px solid ${meta.color}50`
                 : "1px solid rgba(255,255,255,0.08)",
+              filter: isActive ? "none" : "grayscale(0.3) opacity(0.7)",
+              transform: isActive ? "scale(1.1)" : "scale(1)",
             }}
           >
-            <span>{meta.icon}</span>
-            <span className="hidden sm:inline">
-              {meta.label.split(" ").slice(0, 2).join(" ")}
-            </span>
+            {meta.icon}
           </button>
         );
       })}
