@@ -3,10 +3,10 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Plus, ArrowLeft, Search } from "lucide-react";
+import { Plus, ArrowLeft, Search, ArrowUpDown } from "lucide-react";
 import { Category, Subscription } from "@/lib/types";
 import { loadSubscriptions, loadDemoSubscriptions, saveSubscriptions } from "@/lib/storage";
-import { formatCurrency, getTotalMonthly } from "@/lib/calculations";
+import { formatCurrency, getDaysUntilRenewal, getTotalMonthly, toMonthlyPrice } from "@/lib/calculations";
 import StatsCards from "@/components/StatsCards";
 import CategoryChart from "@/components/CategoryChart";
 import SubscriptionCard from "@/components/SubscriptionCard";
@@ -15,6 +15,15 @@ import RenewalList from "@/components/RenewalList";
 import ImpactPhrases from "@/components/ImpactPhrases";
 import FilterBar from "@/components/FilterBar";
 import ExportButton from "@/components/ExportButton";
+
+type SortOption = "renewal" | "price_desc" | "price_asc" | "name";
+
+const SORT_LABELS: Record<SortOption, string> = {
+  renewal: "Próxima renovación",
+  price_desc: "Precio: mayor a menor",
+  price_asc: "Precio: menor a mayor",
+  name: "Nombre",
+};
 
 export default function DashboardPage() {
   return (
@@ -38,6 +47,7 @@ function DashboardContent() {
   });
   const [filter, setFilter] = useState<Category | "all">("all");
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<SortOption>("renewal");
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Subscription | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
@@ -76,12 +86,23 @@ function DashboardContent() {
 
   const filtered = subscriptions
     .filter((s) => filter === "all" || s.category === filter)
-    .filter(
-      (s) =>
-        !search || s.name.toLowerCase().includes(search.toLowerCase())
-    );
+    .filter((s) => !search || s.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => {
+      switch (sort) {
+        case "price_desc":
+          return toMonthlyPrice(b) - toMonthlyPrice(a);
+        case "price_asc":
+          return toMonthlyPrice(a) - toMonthlyPrice(b);
+        case "name":
+          return a.name.localeCompare(b.name, "es", { sensitivity: "base" });
+        case "renewal":
+          return getDaysUntilRenewal(a.renewalDate) - getDaysUntilRenewal(b.renewalDate);
+      }
+    });
 
   const monthly = getTotalMonthly(subscriptions);
+  const filteredMonthly = getTotalMonthly(filtered);
+  const hasActiveView = filter !== "all" || search;
 
   return (
     <div className="min-h-screen" style={{ background: "#09090f" }}>
@@ -192,21 +213,56 @@ function DashboardContent() {
                   className="flex-1 bg-transparent text-sm text-white outline-none placeholder:text-[#334155]"
                 />
               </div>
+              <div
+                className="flex items-center gap-2 px-3 py-2 rounded-xl sm:w-56"
+                style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                }}
+              >
+                <ArrowUpDown size={15} style={{ color: "#475569" }} />
+                <select
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value as SortOption)}
+                  aria-label="Ordenar suscripciones"
+                  className="w-full bg-transparent text-sm text-white outline-none cursor-pointer"
+                  style={{ colorScheme: "dark" }}
+                >
+                  {Object.entries(SORT_LABELS).map(([value, label]) => (
+                    <option key={value} value={value} style={{ background: "#18181f" }}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <FilterBar selected={filter} onChange={setFilter} />
 
             {/* List header */}
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-white">
-                Suscripciones{" "}
-                <span
-                  className="text-xs font-normal ml-1 px-2 py-0.5 rounded-full"
-                  style={{ background: "rgba(255,255,255,0.07)", color: "#64748b" }}
-                >
-                  {filtered.length}
-                </span>
-              </h2>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 className="text-sm font-semibold text-white">
+                  Suscripciones{" "}
+                  <span
+                    className="text-xs font-normal ml-1 px-2 py-0.5 rounded-full"
+                    style={{ background: "rgba(255,255,255,0.07)", color: "#64748b" }}
+                  >
+                    {filtered.length}
+                  </span>
+                </h2>
+                {filtered.length > 0 && (
+                  <p className="text-xs mt-1" style={{ color: "#64748b" }}>
+                    {hasActiveView ? "Vista actual" : "Total listado"}:{" "}
+                    <span className="font-semibold tabular-nums" style={{ color: "#a78bfa" }}>
+                      {formatCurrency(filteredMonthly)}/mes
+                    </span>{" "}
+                    <span className="tabular-nums">
+                      ({formatCurrency(filteredMonthly * 12)}/año)
+                    </span>
+                  </p>
+                )}
+              </div>
               {filter !== "all" || search ? (
                 <button
                   onClick={() => { setFilter("all"); setSearch(""); }}
