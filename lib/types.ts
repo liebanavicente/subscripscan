@@ -17,6 +17,7 @@ export interface Subscription {
   price: number;
   frequency: PaymentFrequency;
   renewalDate: string; // ISO date string
+  notes?: string;
   color?: string;
 }
 

@@ -63,6 +63,11 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete }: Pro
             </span>
           )}
         </div>
+        {subscription.notes && (
+          <p className="text-xs mt-1 truncate" style={{ color: "#64748b" }}>
+            {subscription.notes}
+          </p>
+        )}
       </div>
 
       {/* Price */}

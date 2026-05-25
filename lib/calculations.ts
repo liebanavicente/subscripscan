@@ -1,5 +1,6 @@
 import { Category, CategoryStats, Subscription } from "./types";
 import { CATEGORY_META } from "./constants";
+import { getDaysUntilISODate, parseLocalISODate, todayLocalISODate } from "./dates";
 
 export function toMonthlyPrice(sub: Subscription): number {
   switch (sub.frequency) {
@@ -68,23 +69,23 @@ export function getUpcomingRenewals(
   subs: Subscription[],
   days = 30
 ): Subscription[] {
-  const now = new Date();
-  const limit = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+  const today = parseLocalISODate(todayLocalISODate());
+  const limit = parseLocalISODate(todayLocalISODate());
+  limit.setDate(limit.getDate() + days);
   return subs
     .filter((s) => {
-      const d = new Date(s.renewalDate);
-      return d >= now && d <= limit;
+      const d = parseLocalISODate(s.renewalDate);
+      return d >= today && d <= limit;
     })
     .sort(
       (a, b) =>
-        new Date(a.renewalDate).getTime() - new Date(b.renewalDate).getTime()
+        parseLocalISODate(a.renewalDate).getTime() -
+        parseLocalISODate(b.renewalDate).getTime()
     );
 }
 
 export function getDaysUntilRenewal(renewalDate: string): number {
-  const now = new Date();
-  const d = new Date(renewalDate);
-  return Math.ceil((d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  return getDaysUntilISODate(renewalDate);
 }
 
 export function formatCurrency(amount: number): string {

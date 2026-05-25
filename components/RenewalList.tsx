@@ -4,6 +4,7 @@ import { Bell } from "lucide-react";
 import { Subscription } from "@/lib/types";
 import { getDaysUntilRenewal, formatCurrency } from "@/lib/calculations";
 import { CATEGORY_META } from "@/lib/constants";
+import { formatShortISODate } from "@/lib/dates";
 
 export default function RenewalList({ subscriptions }: { subscriptions: Subscription[] }) {
   const upcoming = subscriptions
@@ -71,10 +72,7 @@ export default function RenewalList({ subscriptions }: { subscriptions: Subscrip
                     {sub.days === 0 ? "Hoy" : `${sub.days}d`}
                   </p>
                   <p className="text-xs" style={{ color: "#334155" }}>
-                    {new Date(sub.renewalDate).toLocaleDateString("es-ES", {
-                      day: "numeric",
-                      month: "short",
-                    })}
+                    {formatShortISODate(sub.renewalDate)}
                   </p>
                 </div>
               </div>
