@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Suscripscan
 
-## Getting Started
+Suscripscan es una herramienta web para controlar el gasto real de tus suscripciones digitales. Permite registrar servicios recurrentes, ver el gasto mensual, anual y diario, detectar renovaciones cercanas y exportar un informe en CSV o PDF.
 
-First, run the development server:
+> Nombre correcto del proyecto: **suscripscan**.
+
+## Funcionalidades
+
+- Dashboard con resumen mensual, anual y diario.
+- Alta, edicion y eliminacion de suscripciones.
+- Categorias visuales para streaming, musica, IA, software, gaming, nube, telefono e internet.
+- Busqueda y filtros por categoria.
+- Avisos de renovaciones proximas.
+- Frases de impacto para entender mejor el coste acumulado.
+- Exportacion a CSV y PDF.
+- Datos guardados localmente en el navegador, sin cuentas ni servidor.
+
+## Stack
+
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS
+- Recharts
+- jsPDF
+- lucide-react
+
+## Desarrollo
+
+Instala dependencias:
+
+```bash
+npm install
+```
+
+Arranca el entorno local:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre [http://localhost:3000](http://localhost:3000) en el navegador.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Comandos
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev
+npm run build
+npm run start
+npm run lint
+```
 
-## Learn More
+## Privacidad
 
-To learn more about Next.js, take a look at the following resources:
+Suscripscan guarda la informacion en `localStorage`. Los datos no salen del dispositivo del usuario salvo que este exporte un CSV o PDF manualmente.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Renombrar el repositorio
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Si el repositorio publico aun aparece como `subscripscan`, renombralo en GitHub a `suscripscan` desde:
 
-## Deploy on Vercel
+`Settings -> General -> Repository name`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Despues actualiza el remoto local:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+git remote set-url origin https://github.com/liebanavicente/suscripscan.git
+```

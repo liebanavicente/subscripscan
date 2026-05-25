@@ -7,6 +7,7 @@ import {
   getTotalAnnual,
   formatCurrency,
 } from "./calculations";
+import { todayLocalISODate } from "./dates";
 
 // ─── CSV ──────────────────────────────────────────────────────────────────────
 
@@ -174,7 +175,7 @@ export async function exportToPDF(subscriptions: Subscription[]): Promise<void> 
 // ─── Utils ────────────────────────────────────────────────────────────────────
 
 function dateStamp(): string {
-  return new Date().toISOString().split("T")[0];
+  return todayLocalISODate();
 }
 
 function triggerDownload(blob: Blob, filename: string): void {

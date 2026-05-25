@@ -29,29 +29,22 @@ export default function DashboardPage() {
 }
 
 function DashboardContent() {
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const searchParams = useSearchParams();
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>(() => {
+    const isDemo = searchParams.get("demo") === "true";
+    const stored = loadSubscriptions();
+    if (isDemo && stored.length === 0) return loadDemoSubscriptions();
+    return stored;
+  });
   const [filter, setFilter] = useState<Category | "all">("all");
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Subscription | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-  const [loaded, setLoaded] = useState(false);
-  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const isDemo = searchParams.get("demo") === "true";
-    const stored = loadSubscriptions();
-    if (isDemo && stored.length === 0) {
-      setSubscriptions(loadDemoSubscriptions());
-    } else {
-      setSubscriptions(stored);
-    }
-    setLoaded(true);
-  }, [searchParams]);
-
-  useEffect(() => {
-    if (loaded) saveSubscriptions(subscriptions);
-  }, [subscriptions, loaded]);
+    saveSubscriptions(subscriptions);
+  }, [subscriptions]);
 
   function handleSave(sub: Subscription) {
     setSubscriptions((prev) => {
@@ -89,17 +82,6 @@ function DashboardContent() {
     );
 
   const monthly = getTotalMonthly(subscriptions);
-
-  if (!loaded) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "#09090f" }}>
-        <div
-          className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
-          style={{ borderColor: "#7c3aed", borderTopColor: "transparent" }}
-        />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen" style={{ background: "#09090f" }}>
@@ -366,6 +348,7 @@ function DashboardContent() {
 
       {/* Modal */}
       <SubscriptionModal
+        key={`${editing?.id ?? "new"}-${modalOpen ? "open" : "closed"}`}
         open={modalOpen}
         subscription={editing}
         onClose={() => { setModalOpen(false); setEditing(null); }}

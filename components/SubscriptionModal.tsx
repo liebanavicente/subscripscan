@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { X } from "lucide-react";
 import { Category, PaymentFrequency, Subscription } from "@/lib/types";
 import { CATEGORIES, CATEGORY_META, FREQUENCY_LABELS } from "@/lib/constants";
 import { generateId } from "@/lib/storage";
+import { todayLocalISODate } from "@/lib/dates";
 
 interface Props {
   open: boolean;
@@ -13,7 +14,7 @@ interface Props {
   onSave: (sub: Subscription) => void;
 }
 
-const today = new Date().toISOString().split("T")[0];
+const today = todayLocalISODate();
 
 const empty: Omit<Subscription, "id"> = {
   name: "",
@@ -23,29 +24,27 @@ const empty: Omit<Subscription, "id"> = {
   renewalDate: today,
 };
 
+function formFromSubscription(subscription?: Subscription | null): Omit<Subscription, "id"> {
+  if (!subscription) return empty;
+  return {
+    name: subscription.name,
+    category: subscription.category,
+    price: subscription.price,
+    frequency: subscription.frequency,
+    renewalDate: subscription.renewalDate,
+  };
+}
+
 export default function SubscriptionModal({
   open,
   subscription,
   onClose,
   onSave,
 }: Props) {
-  const [form, setForm] = useState<Omit<Subscription, "id">>(empty);
+  const [form, setForm] = useState<Omit<Subscription, "id">>(() =>
+    formFromSubscription(subscription)
+  );
   const [errors, setErrors] = useState<Partial<Record<keyof Subscription, string>>>({});
-
-  useEffect(() => {
-    if (subscription) {
-      setForm({
-        name: subscription.name,
-        category: subscription.category,
-        price: subscription.price,
-        frequency: subscription.frequency,
-        renewalDate: subscription.renewalDate,
-      });
-    } else {
-      setForm(empty);
-    }
-    setErrors({});
-  }, [subscription, open]);
 
   function validate(): boolean {
     const e: typeof errors = {};

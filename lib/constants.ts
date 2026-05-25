@@ -1,4 +1,5 @@
 import { Category, Subscription } from "./types";
+import { addDaysToTodayISODate } from "./dates";
 
 export const CATEGORY_META: Record<
   Category,
@@ -64,9 +65,7 @@ export const DEFAULT_SUBSCRIPTIONS: Subscription[] = [
     category: "tv_streaming",
     price: 17.99,
     frequency: "monthly",
-    renewalDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0],
+    renewalDate: addDaysToTodayISODate(5),
   },
   {
     id: "spotify",
@@ -74,9 +73,7 @@ export const DEFAULT_SUBSCRIPTIONS: Subscription[] = [
     category: "music",
     price: 11.99,
     frequency: "monthly",
-    renewalDate: new Date(Date.now() + 12 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0],
+    renewalDate: addDaysToTodayISODate(12),
   },
   {
     id: "chatgpt",
@@ -84,9 +81,7 @@ export const DEFAULT_SUBSCRIPTIONS: Subscription[] = [
     category: "ai_tools",
     price: 20.0,
     frequency: "monthly",
-    renewalDate: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0],
+    renewalDate: addDaysToTodayISODate(8),
   },
   {
     id: "disney",
@@ -94,9 +89,7 @@ export const DEFAULT_SUBSCRIPTIONS: Subscription[] = [
     category: "tv_streaming",
     price: 11.99,
     frequency: "monthly",
-    renewalDate: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0],
+    renewalDate: addDaysToTodayISODate(20),
   },
   {
     id: "icloud",
@@ -104,9 +97,7 @@ export const DEFAULT_SUBSCRIPTIONS: Subscription[] = [
     category: "cloud_storage",
     price: 2.99,
     frequency: "monthly",
-    renewalDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0],
+    renewalDate: addDaysToTodayISODate(3),
   },
   {
     id: "movistar",
@@ -114,9 +105,7 @@ export const DEFAULT_SUBSCRIPTIONS: Subscription[] = [
     category: "phone_internet",
     price: 45.0,
     frequency: "monthly",
-    renewalDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0],
+    renewalDate: addDaysToTodayISODate(15),
   },
   {
     id: "adobe",
@@ -124,9 +113,7 @@ export const DEFAULT_SUBSCRIPTIONS: Subscription[] = [
     category: "software",
     price: 59.99,
     frequency: "monthly",
-    renewalDate: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0],
+    renewalDate: addDaysToTodayISODate(25),
   },
   {
     id: "xbox",
@@ -134,9 +121,7 @@ export const DEFAULT_SUBSCRIPTIONS: Subscription[] = [
     category: "gaming",
     price: 14.99,
     frequency: "monthly",
-    renewalDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0],
+    renewalDate: addDaysToTodayISODate(7),
   },
 ];
 
