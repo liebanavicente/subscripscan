@@ -111,7 +111,7 @@ export default function LandingPage() {
             <ArrowRight size={18} />
           </Link>
           <Link
-            href="/dashboard"
+            href="/dashboard?demo=true"
             className="flex items-center justify-center gap-2 px-8 py-4 rounded-2xl font-medium text-base transition-all"
             style={{
               background: "rgba(255,255,255,0.06)",

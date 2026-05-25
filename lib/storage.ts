@@ -6,17 +6,19 @@ import { DEFAULT_SUBSCRIPTIONS } from "./constants";
 const STORAGE_KEY = "suscripscan_subscriptions";
 
 export function loadSubscriptions(): Subscription[] {
-  if (typeof window === "undefined") return DEFAULT_SUBSCRIPTIONS;
+  if (typeof window === "undefined") return [];
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) {
-      saveSubscriptions(DEFAULT_SUBSCRIPTIONS);
-      return DEFAULT_SUBSCRIPTIONS;
-    }
+    if (!stored) return [];
     return JSON.parse(stored) as Subscription[];
   } catch {
-    return DEFAULT_SUBSCRIPTIONS;
+    return [];
   }
+}
+
+export function loadDemoSubscriptions(): Subscription[] {
+  saveSubscriptions(DEFAULT_SUBSCRIPTIONS);
+  return DEFAULT_SUBSCRIPTIONS;
 }
 
 export function saveSubscriptions(subscriptions: Subscription[]): void {

@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Plus, ArrowLeft, Search } from "lucide-react";
 import { Category, Subscription } from "@/lib/types";
-import { loadSubscriptions, saveSubscriptions } from "@/lib/storage";
+import { loadSubscriptions, loadDemoSubscriptions, saveSubscriptions } from "@/lib/storage";
 import { formatCurrency, getTotalMonthly } from "@/lib/calculations";
 import StatsCards from "@/components/StatsCards";
 import CategoryChart from "@/components/CategoryChart";
@@ -15,6 +16,18 @@ import ImpactPhrases from "@/components/ImpactPhrases";
 import FilterBar from "@/components/FilterBar";
 
 export default function DashboardPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "#09090f" }}>
+        <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: "#7c3aed", borderTopColor: "transparent" }} />
+      </div>
+    }>
+      <DashboardContent />
+    </Suspense>
+  );
+}
+
+function DashboardContent() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [filter, setFilter] = useState<Category | "all">("all");
   const [search, setSearch] = useState("");
@@ -22,11 +35,18 @@ export default function DashboardPage() {
   const [editing, setEditing] = useState<Subscription | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    setSubscriptions(loadSubscriptions());
+    const isDemo = searchParams.get("demo") === "true";
+    const stored = loadSubscriptions();
+    if (isDemo && stored.length === 0) {
+      setSubscriptions(loadDemoSubscriptions());
+    } else {
+      setSubscriptions(stored);
+    }
     setLoaded(true);
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     if (loaded) saveSubscriptions(subscriptions);
@@ -234,13 +254,26 @@ export default function DashboardPage() {
                       : "Prueba con otro filtro o búsqueda"}
                   </p>
                   {subscriptions.length === 0 && (
-                    <button
-                      onClick={handleAdd}
-                      className="text-sm font-semibold px-5 py-2.5 rounded-xl text-white cursor-pointer"
-                      style={{ background: "linear-gradient(135deg, #7c3aed, #6d28d9)" }}
-                    >
-                      Añadir suscripción
-                    </button>
+                    <div className="flex gap-3 justify-center flex-wrap">
+                      <button
+                        onClick={handleAdd}
+                        className="text-sm font-semibold px-5 py-2.5 rounded-xl text-white cursor-pointer"
+                        style={{ background: "linear-gradient(135deg, #7c3aed, #6d28d9)" }}
+                      >
+                        Añadir suscripción
+                      </button>
+                      <button
+                        onClick={() => setSubscriptions(loadDemoSubscriptions())}
+                        className="text-sm font-medium px-5 py-2.5 rounded-xl cursor-pointer"
+                        style={{
+                          background: "rgba(255,255,255,0.06)",
+                          color: "#94a3b8",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                        }}
+                      >
+                        Cargar ejemplos
+                      </button>
+                    </div>
                   )}
                 </div>
               ) : (
