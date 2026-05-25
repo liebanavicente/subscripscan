@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Plus, ArrowLeft, Search } from "lucide-react";
+import { Plus, ArrowLeft, Search, RotateCcw } from "lucide-react";
 import { Category, Subscription } from "@/lib/types";
 import { loadSubscriptions, loadDemoSubscriptions, saveSubscriptions } from "@/lib/storage";
 import { formatCurrency, getTotalMonthly } from "@/lib/calculations";
@@ -43,6 +43,7 @@ function DashboardContent() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Subscription | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [resetConfirm, setResetConfirm] = useState(false);
   const loaded = typeof window !== "undefined";
 
   useEffect(() => {
@@ -75,6 +76,17 @@ function DashboardContent() {
   function handleAdd() {
     setEditing(null);
     setModalOpen(true);
+  }
+
+  function handleReset() {
+    if (resetConfirm) {
+      setSubscriptions([]);
+      saveSubscriptions([]);
+      setResetConfirm(false);
+    } else {
+      setResetConfirm(true);
+      setTimeout(() => setResetConfirm(false), 3000);
+    }
   }
 
   const filtered = subscriptions
@@ -140,6 +152,24 @@ function DashboardContent() {
               {formatCurrency(monthly)}
             </span>
           </div>
+
+          {subscriptions.length > 0 && (
+            <button
+              onClick={handleReset}
+              title="Borrar todos los datos"
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer"
+              style={{
+                background: resetConfirm ? "rgba(239,68,68,0.15)" : "rgba(255,255,255,0.05)",
+                color: resetConfirm ? "#ef4444" : "#475569",
+                border: resetConfirm ? "1px solid rgba(239,68,68,0.4)" : "1px solid rgba(255,255,255,0.08)",
+              }}
+            >
+              <RotateCcw size={14} />
+              <span className="hidden sm:inline">
+                {resetConfirm ? "¿Confirmar?" : "Resetear"}
+              </span>
+            </button>
+          )}
 
           <ExportButton subscriptions={subscriptions} />
 
