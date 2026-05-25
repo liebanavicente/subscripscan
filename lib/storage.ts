@@ -5,6 +5,11 @@ import { DEFAULT_SUBSCRIPTIONS } from "./constants";
 
 const STORAGE_KEY = "suscripscan_subscriptions";
 
+export function hasStoredSubscriptions(): boolean {
+  if (typeof window === "undefined") return false;
+  return localStorage.getItem(STORAGE_KEY) !== null;
+}
+
 export function loadSubscriptions(): Subscription[] {
   if (typeof window === "undefined") return [];
   try {

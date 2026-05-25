@@ -5,7 +5,12 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Plus, ArrowLeft, Search, ArrowUpDown, Trash2 } from "lucide-react";
 import { Category, Subscription } from "@/lib/types";
-import { loadSubscriptions, loadDemoSubscriptions, saveSubscriptions } from "@/lib/storage";
+import {
+  hasStoredSubscriptions,
+  loadSubscriptions,
+  loadDemoSubscriptions,
+  saveSubscriptions,
+} from "@/lib/storage";
 import { formatCurrency, getDaysUntilRenewal, getTotalMonthly, toMonthlyPrice } from "@/lib/calculations";
 import StatsCards from "@/components/StatsCards";
 import CategoryChart from "@/components/CategoryChart";
@@ -41,8 +46,9 @@ function DashboardContent() {
   const searchParams = useSearchParams();
   const [subscriptions, setSubscriptions] = useState<Subscription[]>(() => {
     const isDemo = searchParams.get("demo") === "true";
+    const hasStored = hasStoredSubscriptions();
     const stored = loadSubscriptions();
-    if (isDemo && stored.length === 0) return loadDemoSubscriptions();
+    if (isDemo && !hasStored) return loadDemoSubscriptions();
     return stored;
   });
   const [filter, setFilter] = useState<Category | "all">("all");
