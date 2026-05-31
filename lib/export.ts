@@ -179,6 +179,36 @@ export async function exportToPDF(subscriptions: Subscription[]): Promise<void> 
   doc.save(`suscripscan_${dateStamp()}.pdf`);
 }
 
+// ─── JSON backup ──────────────────────────────────────────────────────────────
+
+export function exportToJSON(subscriptions: Subscription[]): void {
+  const payload = JSON.stringify({ version: 1, subscriptions }, null, 2);
+  const blob = new Blob([payload], { type: "application/json" });
+  triggerDownload(blob, `suscripscan_backup_${dateStamp()}.json`);
+}
+
+export function importFromJSON(file: File): Promise<Subscription[]> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const raw = JSON.parse(e.target?.result as string);
+        const subs: Subscription[] = Array.isArray(raw)
+          ? raw
+          : Array.isArray(raw?.subscriptions)
+          ? raw.subscriptions
+          : null;
+        if (!subs) throw new Error("Formato no reconocido");
+        resolve(subs);
+      } catch {
+        reject(new Error("El fichero no es un backup válido de Suscripscan"));
+      }
+    };
+    reader.onerror = () => reject(new Error("Error al leer el fichero"));
+    reader.readAsText(file);
+  });
+}
+
 // ─── Utils ────────────────────────────────────────────────────────────────────
 
 function dateStamp(): string {

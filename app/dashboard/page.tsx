@@ -172,7 +172,7 @@ function DashboardContent() {
             </button>
           )}
 
-          <ExportButton subscriptions={subscriptions} />
+          <ExportButton subscriptions={subscriptions} onImport={(subs) => setSubscriptions(subs)} />
 
           <button
             onClick={handleAdd}
