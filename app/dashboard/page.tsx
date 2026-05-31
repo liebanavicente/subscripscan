@@ -15,6 +15,7 @@ import RenewalList from "@/components/RenewalList";
 import ImpactPhrases from "@/components/ImpactPhrases";
 import FilterBar from "@/components/FilterBar";
 import ExportButton from "@/components/ExportButton";
+import MonthlyCalendar from "@/components/MonthlyCalendar";
 
 export default function DashboardPage() {
   return (
@@ -196,6 +197,11 @@ function DashboardContent() {
         {/* Stats */}
         <section>
           <StatsCards subscriptions={subscriptions} />
+        </section>
+
+        {/* Monthly calendar */}
+        <section>
+          <MonthlyCalendar subscriptions={subscriptions} />
         </section>
 
         {/* Charts */}

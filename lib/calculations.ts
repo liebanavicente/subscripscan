@@ -97,6 +97,48 @@ export function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
+export function getRenewalsForMonth(
+  subs: Subscription[],
+  year: number,
+  month: number // 0-indexed
+): Map<number, Subscription[]> {
+  const result = new Map<number, Subscription[]>();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  for (const sub of subs) {
+    const renewal = parseLocalISODate(sub.renewalDate);
+    const renewalDay = renewal.getDate();
+    const renewalMonth = renewal.getMonth();
+    const renewalYear = renewal.getFullYear();
+
+    let occursThisMonth = false;
+
+    switch (sub.frequency) {
+      case "monthly":
+        occursThisMonth = true;
+        break;
+      case "annual":
+        occursThisMonth = renewalMonth === month;
+        break;
+      case "quarterly": {
+        const totalRenewal = renewalYear * 12 + renewalMonth;
+        const totalView = year * 12 + month;
+        const diff = totalView - totalRenewal;
+        occursThisMonth = diff >= 0 && diff % 3 === 0;
+        break;
+      }
+    }
+
+    if (occursThisMonth) {
+      const day = Math.min(renewalDay, daysInMonth);
+      const existing = result.get(day) ?? [];
+      result.set(day, [...existing, sub]);
+    }
+  }
+
+  return result;
+}
+
 export function getImpactPhrases(subs: Subscription[]): string[] {
   const monthly = getTotalMonthly(subs);
   const annual = getTotalAnnual(subs);
