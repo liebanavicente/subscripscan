@@ -1,9 +1,10 @@
 "use client";
 
-import { Subscription } from "./types";
+import { Expense, Subscription } from "./types";
 import { DEFAULT_SUBSCRIPTIONS } from "./constants";
 
 const STORAGE_KEY = "suscripscan_subscriptions";
+const EXPENSES_KEY = "suscripscan_expenses";
 
 export function hasStoredSubscriptions(): boolean {
   if (typeof window === "undefined") return false;
@@ -35,6 +36,26 @@ export function saveSubscriptions(subscriptions: Subscription[]): void {
   }
 }
 
+export function loadExpenses(): Expense[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const stored = localStorage.getItem(EXPENSES_KEY);
+    if (!stored) return [];
+    return JSON.parse(stored) as Expense[];
+  } catch {
+    return [];
+  }
+}
+
+export function saveExpenses(expenses: Expense[]): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(EXPENSES_KEY, JSON.stringify(expenses));
+  } catch {
+    // storage quota exceeded — silently fail
+  }
+}
+
 export function generateId(): string {
-  return `sub_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+  return `item_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 }

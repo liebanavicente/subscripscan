@@ -1,4 +1,4 @@
-import { Category, Subscription } from "./types";
+import { Category, ExpenseCategory, Subscription } from "./types";
 import { addDaysToTodayISODate } from "./dates";
 
 export const CATEGORY_META: Record<
@@ -123,6 +123,26 @@ export const DEFAULT_SUBSCRIPTIONS: Subscription[] = [
     frequency: "monthly",
     renewalDate: addDaysToTodayISODate(7),
   },
+];
+
+export const EXPENSE_CATEGORY_META: Record<
+  ExpenseCategory,
+  { label: string; color: string; icon: string }
+> = {
+  alimentacion: { label: "Alimentación", color: "#f59e0b", icon: "🛒" },
+  transporte:   { label: "Transporte",   color: "#3b82f6", icon: "🚗" },
+  ocio:         { label: "Ocio",         color: "#ec4899", icon: "🎉" },
+  salud:        { label: "Salud",        color: "#10b981", icon: "🏥" },
+  hogar:        { label: "Hogar",        color: "#6366f1", icon: "🏠" },
+  ropa:         { label: "Ropa",         color: "#8b5cf6", icon: "👗" },
+  educacion:    { label: "Educación",    color: "#06b6d4", icon: "📚" },
+  viajes:       { label: "Viajes",       color: "#f97316", icon: "✈️" },
+  otros:        { label: "Otros",        color: "#64748b", icon: "📦" },
+};
+
+export const EXPENSE_CATEGORIES: ExpenseCategory[] = [
+  "alimentacion", "transporte", "ocio", "salud",
+  "hogar", "ropa", "educacion", "viajes", "otros",
 ];
 
 export const FREQUENCY_LABELS: Record<string, string> = {

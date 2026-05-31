@@ -2,15 +2,16 @@
 
 import { useRef, useState } from "react";
 import { Download, FileText, FileSpreadsheet, ChevronDown, Database, Upload } from "lucide-react";
-import { Subscription } from "@/lib/types";
-import { exportToCSV, exportToPDF, exportToJSON, importFromJSON } from "@/lib/export";
+import { Expense, Subscription } from "@/lib/types";
+import { exportToCSV, exportToPDF, exportToJSON, importFromJSON, ImportResult } from "@/lib/export";
 
 interface Props {
   subscriptions: Subscription[];
-  onImport: (subs: Subscription[]) => void;
+  expenses: Expense[];
+  onImport: (result: ImportResult) => void;
 }
 
-export default function ExportButton({ subscriptions, onImport }: Props) {
+export default function ExportButton({ subscriptions, expenses, onImport }: Props) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState<"csv" | "pdf" | "json" | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
@@ -32,7 +33,7 @@ export default function ExportButton({ subscriptions, onImport }: Props) {
 
   function handleJSON() {
     setLoading("json");
-    exportToJSON(subscriptions);
+    exportToJSON(subscriptions, expenses);
     setLoading(null);
     setOpen(false);
   }
@@ -47,8 +48,8 @@ export default function ExportButton({ subscriptions, onImport }: Props) {
     const file = e.target.files?.[0];
     if (!file) return;
     try {
-      const subs = await importFromJSON(file);
-      onImport(subs);
+      const result = await importFromJSON(file);
+      onImport(result);
     } catch (err) {
       setImportError(err instanceof Error ? err.message : "Error al importar");
       setTimeout(() => setImportError(null), 4000);

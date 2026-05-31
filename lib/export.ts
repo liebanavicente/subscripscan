@@ -1,4 +1,4 @@
-import { Subscription } from "./types";
+import { Expense, Subscription } from "./types";
 import { CATEGORY_META, FREQUENCY_LABELS } from "./constants";
 import {
   toMonthlyPrice,
@@ -181,25 +181,31 @@ export async function exportToPDF(subscriptions: Subscription[]): Promise<void> 
 
 // ─── JSON backup ──────────────────────────────────────────────────────────────
 
-export function exportToJSON(subscriptions: Subscription[]): void {
-  const payload = JSON.stringify({ version: 1, subscriptions }, null, 2);
+export function exportToJSON(subscriptions: Subscription[], expenses: Expense[]): void {
+  const payload = JSON.stringify({ version: 2, subscriptions, expenses }, null, 2);
   const blob = new Blob([payload], { type: "application/json" });
   triggerDownload(blob, `suscripscan_backup_${dateStamp()}.json`);
 }
 
-export function importFromJSON(file: File): Promise<Subscription[]> {
+export interface ImportResult {
+  subscriptions: Subscription[];
+  expenses: Expense[];
+}
+
+export function importFromJSON(file: File): Promise<ImportResult> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
         const raw = JSON.parse(e.target?.result as string);
-        const subs: Subscription[] = Array.isArray(raw)
+        const subscriptions: Subscription[] = Array.isArray(raw)
           ? raw
           : Array.isArray(raw?.subscriptions)
           ? raw.subscriptions
           : null;
-        if (!subs) throw new Error("Formato no reconocido");
-        resolve(subs);
+        if (!subscriptions) throw new Error("Formato no reconocido");
+        const expenses: Expense[] = Array.isArray(raw?.expenses) ? raw.expenses : [];
+        resolve({ subscriptions, expenses });
       } catch {
         reject(new Error("El fichero no es un backup válido de Suscripscan"));
       }

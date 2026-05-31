@@ -21,6 +21,26 @@ export interface Subscription {
   color?: string;
 }
 
+export type ExpenseCategory =
+  | "alimentacion"
+  | "transporte"
+  | "ocio"
+  | "salud"
+  | "hogar"
+  | "ropa"
+  | "educacion"
+  | "viajes"
+  | "otros";
+
+export interface Expense {
+  id: string;
+  name: string;
+  category: ExpenseCategory;
+  amount: number;
+  date: string; // ISO date string
+  notes?: string;
+}
+
 export interface CategoryStats {
   category: Category;
   label: string;
